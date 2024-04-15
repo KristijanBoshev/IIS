@@ -1,5 +1,5 @@
 import torch
-from torch.nn.functional import mse_loss
+from torch.nn.functional import mse_loss, l1_loss
 from torch_geometric.nn import to_hetero
 from torch_geometric.nn import Linear, SAGEConv
 
@@ -57,7 +57,7 @@ def train_link_prediction(model, train_data, val_data, optimizer, epochs=5):
         model.eval()
         pred = model(val_data.x_dict, val_data.edge_index_dict,
                      val_data['user', 'book'].edge_label_index)
-        pred = pred.clamp(min=0, max=5)
+        pred = pred.clamp(min=1, max=5)
         target = val_data['user', 'book'].edge_label.float()
         val_loss = mse_loss(pred, target).sqrt()
 
